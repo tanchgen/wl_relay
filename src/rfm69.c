@@ -69,7 +69,14 @@ void rfmInit( void ){
 
   rfDataInit();
   // Настройка выходов DIO_RFM и прерывания от DIO0 и DIO4 (RSSI)
-  dioInit();
+//  dioInit();
+  // Настройка для внешнего модуля
+  RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+//  RST  - PA2
+  //---- Инициализация выводов для RFM_RST: Выход, 400кГц, ОК, без подтяжки ---
+  GPIOA->OSPEEDR &= ~(0x3 << (2 * 2));
+  GPIOA->PUPDR &= ~(0x3<< (2 * 2));
+  GPIOA->MODER = (GPIOA->MODER &  ~(0x3<< (2 * 2))) | (0x1<< (2 * 2));
 
   // Начальный сброс модуля
   rfmRst();
@@ -130,8 +137,11 @@ void rfmSetMode_s( uint8_t mode ){
   }
   rfmRegWrite( REG_OPMODE, mode );
 
-  while( (rc = dioRead(DIO_MODEREADY)) == 0 )
+//  while( (rc = dioRead(DIO_MODEREADY)) == 0 )
+//  {}
+  while( (rfmRegRead(REG_FLAG1) & REG_IF1_MODEREADY) != REG_IF1_MODEREADY)
   {}
+
 
   rfm.mode = mode >> 2;
 exit:
@@ -160,7 +170,9 @@ void rfmTransmit_s( tPkt * ppkt ){
   rfmTransmit( ppkt );
 
   // Ждем, пока закончится передача
-  while( (rc=dioRead(DIO_PAYL_RDY)) == 0 )
+//  while( (rc=dioRead(DIO_PAYL_RDY)) == 0 )
+//  {}
+  while( (rfmRegRead(REG_FLAG2) & REG_IF2_PAYL_RDY) != REG_IF2_PAYL_RDY)
   {}
 
   EXTI->IMR |= DIO0_PIN;
@@ -182,7 +194,7 @@ void rfmTransmit( tPkt *pPkt ){
     txBuf[3+i] = pPkt->payBuf[i];
   }
   // Опустошаем FIFO
-  while( dioRead(DIO_RX_FIFONE) == SET ){
+  while( (rfmRegRead(REG_FLAG2) & REG_IF2_FIFO_NE) == REG_IF2_FIFO_NE){
     rfmRegRead( REG_FIFO );
   }
 
@@ -217,9 +229,9 @@ uint8_t rfmReceive( tPkt * pkt ){
  uint8_t rc;
 
   // Проверяем, получен ли пакет полностью
- if( (rc = dioRead(DIO_PAYL_RDY)) == RESET  ){
-    return 0;
-  }
+ if( (rfmRegRead(REG_FLAG2) & REG_IF2_PAYL_RDY) == RESET ){
+   return 0;
+ }
 
   // Считываем длину принимаемых данных (payload) (длина пакета - 1 байт адреса)
   pkt->payLen = rfmRegRead( REG_FIFO ) - 1;
@@ -242,7 +254,7 @@ void rfmRecvStop( void ){
   // Выключаем RFM69
   rfmSetMode_s( REG_OPMODE_SLEEP );
   // Если в FIFO осталось что-то - в мусор...
-  while( dioRead(DIO_RX_FIFONE) ){
+  while( (rfmRegRead(REG_FLAG2) & REG_IF2_FIFO_NE) == REG_IF2_FIFO_NE){
     rfmRegRead( REG_FIFO );
   }
 }
@@ -340,8 +352,8 @@ static inline void rfmRegSetup( void ){
   // DIO3 - 0b01  // RX- RSSI, TX - ----
   // DIO4 - 0b01  // RX- RSSI, TX - ----
   // DIO5 - 0b11  // RX- ModeReady, TX - ModeReady
-  rfmRegWrite( REG_DIO_MAP1, 0x11 );
-  rfmRegWrite( REG_DIO_MAP2, 0x77 );
+  //rfmRegWrite( REG_DIO_MAP1, 0x11 );
+  //rfmRegWrite( REG_DIO_MAP2, 0x77 );
 
 // -------------- Bitrate ------------------------
 #if 1

@@ -21,7 +21,14 @@ void spiInit(void) {
   PB14   ------> SPI2_MOSI
   PB15   ------> SPI2_MOSI
   */
-	// Software NSS
+	// Software NSS --> PB7
+  GPIOB->BSRR |= GPIO_Pin_7;
+  GPIOB->OSPEEDR |= (0x03L << (7 * 2));
+  GPIOB->MODER = (GPIOB->MODER & ~(GPIO_MODER_MODER7)) | GPIO_MODER_MODER7_0;
+  // Выключаем подтяжку
+  GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR7);
+
+  // Software NSS
   GPIOB->BSRR |= GPIO_Pin_12;
   GPIOB->OSPEEDR |= (0x03L << (12 * 2)) | (0x03L << (13 * 2)) | (0x03L << (14 * 2)) | (0x03L << (15 * 2));
   GPIOB->MODER = (GPIOB->MODER & ~(GPIO_MODER_MODER12 | GPIO_MODER_MODER13 | GPIO_MODER_MODER14 | GPIO_MODER_MODER15)) \
@@ -39,7 +46,7 @@ void spiInit(void) {
   // Set Master Mode and Software control of slave select
 
   SPI2->CR1 = (SPI2->CR1 & ~(SPI_CR1_CPOL | SPI_CR1_CPHA )) \
-		| SPI_CR1_BR_2 | SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI;
+		| SPI_CR1_BR_1 | SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI;
   // Slave select output enabled
 //  SPI2->CR2 = SPI_CR2_SSOE;
   // SPI включается непосредственно перед пердачей или приемом
@@ -53,10 +60,11 @@ void spiInit(void) {
 int8_t spiTrans_s( uint8_t *buf, uint8_t len ){
   uint32_t tout;
 
-  // 	Таймаут ~10мс или около того...
-  tout = 20000;
+  // 	Таймаут ~8мс или около того...
+  tout = 400000;
   // NSS -> 0
-  GPIOB->BRR |= GPIO_Pin_12;
+//  GPIOB->BRR |= GPIO_Pin_12;
+  GPIOB->BRR |= GPIO_Pin_7;
   // SPI включается непосредственно перед пердачей или приемом
   SPI2->CR1 |= SPI_CR1_SPE;
   // Отправка из буфера tx в буфер SPI
@@ -70,14 +78,15 @@ int8_t spiTrans_s( uint8_t *buf, uint8_t len ){
     }
   }
   // Ждем окончания передачи
-  tout = 20000;
+  tout = 400000;
   while( (SPI2->SR & SPI_SR_BSY) != 0 ){
     if( --tout == 0){
       return -1;
     }
   }
   // NSS -> 1
-  GPIOB->BSRR |= GPIO_Pin_12;
+//  GPIOB->BSRR |= GPIO_Pin_12;
+  GPIOB->BRR |= GPIO_Pin_7;
   // SPI включается непосредственно перед пердачей или приемом
   SPI2->CR1 &= ~SPI_CR1_SPE;
 
@@ -89,7 +98,7 @@ int8_t spiRecv_s( uint8_t *buf, uint8_t len ){
   uint8_t txCount = len;
   uint32_t tout;
 
-  // На всю операцию отводим не более 10мс
+  // На всю операцию отводим не более ~8мс (48MHz)
   tout = 200000;
   // SPI включается непосредственно перед пердачей или приемом
   SPI2->CR1 |= SPI_CR1_SPE;
@@ -108,7 +117,7 @@ int8_t spiRecv_s( uint8_t *buf, uint8_t len ){
     }
   }
   // Ждем окончания приема
-  tout = 200000;
+  tout = 400000;
   while( (SPI2->SR & SPI_SR_BSY) != 0 ){
     if( --tout == 0){
 //      return -1;
@@ -125,10 +134,11 @@ int8_t spiTransRecv_s( uint8_t *txBuf, uint8_t *rxBuf, uint8_t len ){
   uint8_t txCount = len;
   uint32_t tout;
 
-  // На всю операцию отводим не более 10мс
-  tout = 20000;
+  // На всю операцию отводим не более ~8мс (48Mhz)
+  tout = 400000;
   // NSS -> 0
-  GPIOB->BRR |= GPIO_Pin_12;
+//  GPIOB->BRR |= GPIO_Pin_12;
+  GPIOB->BRR |= GPIO_Pin_7;
   // SPI включается непосредственно перед пердачей или приемом
   SPI2->CR1 |= SPI_CR1_SPE;
   // Отправка из буфера tx в буфер SPI
@@ -146,14 +156,15 @@ int8_t spiTransRecv_s( uint8_t *txBuf, uint8_t *rxBuf, uint8_t len ){
     }
   }
   // Ждем окончания приема
-  tout = 20000;
+  tout = 400000;
   while( (SPI2->SR & SPI_SR_BSY) != 0 ){
     if( --tout == 0){
       return -1;
     }
   }
   // NSS -> 1
-  GPIOB->BSRR |= GPIO_Pin_12;
+//  GPIOB->BSRR |= GPIO_Pin_12;
+  GPIOB->BSRR |= GPIO_Pin_7;
   // SPI включается непосредственно перед пердачей или приемом
   SPI2->CR1 &= ~SPI_CR1_SPE;
 
