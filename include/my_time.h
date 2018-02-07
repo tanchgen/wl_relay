@@ -94,5 +94,7 @@ void usTimStop( void );
  * us - время в мкс.
  */
 void usTimSet( uint32_t us );
+// Таймер мигания светодиодом
+void errTimInit( void );
 
 #endif /* UNIX_TIME_H_ */

@@ -71,10 +71,10 @@ void SysTick_Handler(void) {
       ledBlinkR1--;
     }
   }
-  // Таймер переключения светодиода Реле1
+  // Таймер переключения светодиода Реле2
   if(ledBlinkR2 > 0){
     if(ledBlinkR2 == 1){
-      ledR2Toggle();
+//      ledR2Toggle();
       ledBlinkR2 = LED_BLINK_TIME;
     }
     else {
@@ -154,10 +154,6 @@ void EXTI0_1_IRQHandler(void)
     driveData.rssi = rfmRegRead( REG_RSSI_VAL );
     rfmReceive( &rxPkt );
     rfmRecvStop();
-    // Опустошаем FIFO
-    while( dioRead(DIO_RX_FIFONE) == SET ){
-      rfmRegRead( REG_FIFO );
-    }
     driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
     // Включаем - Выключаем реле
     (rxPkt.payLoad.cmdMsg.cmdNum & 0x01)? relay1On(): relay1Off();

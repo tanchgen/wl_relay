@@ -13,11 +13,11 @@
 
 void rfmFreqSet( uint32_t freq );
 
-uint8_t rfmReg[0x50];
-
 tRfm  rfm;
 tPkt pkt;            // Структура принятого пакета
 //extern uint8_t tmpVal;
+uint8_t regBuf[0x50];
+
 
 // Определение значения частоты трансивера для регистров RFM69HW
 #define CHANN_FREQ( c ) (((((int32_t)(c) - 3 ) * CHANN8_FREQ_STEP)) / FR_STEP) + CHANN8_3_FREQ
@@ -155,7 +155,7 @@ void rfmTransmit_s( tPkt * ppkt ){
   uint8_t rc;
 
   EXTI->IMR &= ~DIO0_PIN;
-  EXTI->PR |= DIO0_PIN;
+  EXTI->PR &= DIO0_PIN;
 
   rfmTransmit( ppkt );
 
@@ -193,6 +193,11 @@ void rfmTransmit( tPkt *pPkt ){
 #if DEBUG_TIME
 	dbgTime.rfmTxStart = mTick;
 #endif // DEBUG_TIME
+
+  // !!! Дебажим  регистры !!!
+//    for( uint8_t i = 1; i < 0x40; i++ ){
+//      regBuf[i] = rfmRegRead( i );
+//    }
 
   // Переводим в режим передачи
   if( rfm.mode != MODE_TX ){
@@ -370,9 +375,12 @@ static inline void rfmRegSetup( void ){
  // rfmRegWrite( REG_AFCFEI, REG_AFCFEI_AFC_AUTO );
   // Настройка усилителя приемника: Вх. = 200 Ом, Усиление - AGC
   rfmRegWrite( REG_LNA, 0x80 );
+  // Настройка усилителя приемника: Вх. = 50 Ом, Усиление - AGC
+//  rfmRegWrite( REG_LNA, 0x40 );
 
   // Настройка усилителя передатчика PA0 - выкл, PA1 - вкл.  Мощность - +10 дБм: (-18 + 28)
   rfmRegWrite( REG_PA_LVL, 0x40 | (TX_PWR_10) );
+  regBuf[REG_PA_LVL] = rfmRegRead(REG_PA_LVL);
   // Настройка Sync-последовательности: Sync(NetID - вкл), 2 байта, (Net ID = 0x0101)
   rfmRegWrite( REG_SYNC1, (uint8_t)(rfm.netId >> 8) );
   rfmRegWrite( REG_SYNC2, (uint8_t)rfm.netId );
