@@ -320,6 +320,7 @@ static inline void rfDataInit( void ){
   rfm.netId = NET_ID;
   rfm.channel = CHANN_DEF;
   rfm.nodeAddr = NODE_ADDR;
+//  rfm.nodeAddr = BCRT_ADDR;
   rfm.txPwr = TX_PWR_10;
 }
 

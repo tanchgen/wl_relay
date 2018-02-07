@@ -6,9 +6,11 @@
 #include "main.h"
 #include "process.h"
 #include "rfm69.h"
-#include "stm32l0xx_it.h"
+#include "stm32f0xx_it.h"
 
 uint8_t connect = FALSE;
+
+// uint8_t rssiVol[6];
 
 extern uint8_t wutCount;
 extern struct tWutTest {
@@ -152,7 +154,19 @@ void EXTI0_1_IRQHandler(void)
     // Приняли команду.
 
     driveData.rssi = rfmRegRead( REG_RSSI_VAL );
+//    uint8_t i;
+//    rssiVol[0] = rfmRegRead( REG_RSSI_VAL );
     rfmReceive( &rxPkt );
+//    if( rxPkt.paySrcNode == 209){
+//      i = 3;
+//    }
+//    else if( rxPkt.paySrcNode == 9){
+//      i = 2;
+//    }
+//    else {
+//      i = 1;
+//    }
+//    rssiVol[i] = rssiVol[0];
     rfmRecvStop();
     driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
     // Включаем - Выключаем реле
