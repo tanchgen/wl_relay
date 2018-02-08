@@ -6,7 +6,7 @@
 #include "main.h"
 #include "process.h"
 #include "rfm69.h"
-#include "stm32l0xx_it.h"
+#include "stm32f0xx_it.h"
 
 uint8_t connect = FALSE;
 
@@ -154,10 +154,10 @@ void EXTI0_1_IRQHandler(void)
     driveData.rssi = rfmRegRead( REG_RSSI_VAL );
     rfmReceive( &rxPkt );
     rfmRecvStop();
-    driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
-    // Включаем - Выключаем реле
-    (rxPkt.payLoad.cmdMsg.cmdNum & 0x01)? relay1On(): relay1Off();
-    (rxPkt.payLoad.cmdMsg.cmdNum & 0x02)? relay2On(): relay2Off();
+//    driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
+//    // Включаем - Выключаем реле
+//    (rxPkt.payLoad.cmdMsg.cmdNum & 0x01)? relay1On(): relay1Off();
+//    (rxPkt.payLoad.cmdMsg.cmdNum & 0x02)? relay2On(): relay2Off();
     // Обновляем состояние устройства
     mesure();
     // Отправляем отклик

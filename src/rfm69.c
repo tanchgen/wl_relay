@@ -77,9 +77,19 @@ void rfmInit( void ){
   GPIOA->OSPEEDR &= ~(0x3 << (2 * 2));
   GPIOA->PUPDR &= ~(0x3<< (2 * 2));
   GPIOA->MODER = (GPIOA->MODER &  ~(0x3<< (2 * 2))) | (0x1<< (2 * 2));
+  RFM_RST_PORT->BSRR |= RFM_RST_PIN;
+
+  GPIOB->OSPEEDR &= ~(0x3 << (6 * 2));
+  GPIOB->PUPDR &= ~(0x3<< (6 * 2));
+  GPIOB->MODER = (GPIOB->MODER &  ~(0x3<< (6 * 2))) | (0x1<< (6 * 2));
+
+  GPIOB->BSRR |= GPIO_Pin_6;
+  mDelay( 1 );
+  GPIOB->BRR |= GPIO_Pin_6;
+  mDelay( 10 );
 
   // Начальный сброс модуля
-  rfmRst();
+//  rfmRst();
   // Установка начальных значений регистров
   rfmRegSetup();
 
@@ -183,6 +193,9 @@ void rfmTransmit_s( tPkt * ppkt ){
 void rfmTransmit( tPkt *pPkt ){
   uint8_t txBuf[67];
 
+  if( rfm.mode != MODE_RX ){
+    rfmSetMode_s( REG_OPMODE_SLEEP );
+  }
   // Формируем пакет для записи в FIFO
   // Заносим адрес FIFO + бит записи: regAddrByte
   txBuf[0] = REG_FIFO | 0x80;
@@ -206,16 +219,16 @@ void rfmTransmit( tPkt *pPkt ){
 	dbgTime.rfmTxStart = mTick;
 #endif // DEBUG_TIME
 
-  // !!! Дебажим  регистры !!!
-//    for( uint8_t i = 1; i < 0x40; i++ ){
-//      regBuf[i] = rfmRegRead( i );
-//    }
-
   // Переводим в режим передачи
   if( rfm.mode != MODE_TX ){
     // Переводим в режим TX-mode
     rfmSetMode_s( REG_OPMODE_TX );
   }
+  // !!! Дебажим  регистры !!!
+    for( uint8_t i = 1; i < 0x40; i++ ){
+      regBuf[i] = rfmRegRead( i );
+    }
+
 }
 
 
@@ -352,8 +365,8 @@ static inline void rfmRegSetup( void ){
   // DIO3 - 0b01  // RX- RSSI, TX - ----
   // DIO4 - 0b01  // RX- RSSI, TX - ----
   // DIO5 - 0b11  // RX- ModeReady, TX - ModeReady
-  //rfmRegWrite( REG_DIO_MAP1, 0x11 );
-  //rfmRegWrite( REG_DIO_MAP2, 0x77 );
+  rfmRegWrite( REG_DIO_MAP1, 0x11 );
+  rfmRegWrite( REG_DIO_MAP2, 0x77 );
 
 // -------------- Bitrate ------------------------
 #if 1

@@ -19,13 +19,13 @@ volatile uint8_t csmaCount = 0;
 tUxTime sendTryStopTime;
 static uint8_t msgNum;      // Порядковый номер отправляемого пакета
 
-static void sensDataSend( void );
+void sensDataSend( void );
 static uint32_t rngGet( void );
 
 void mesure( void ){
   // Запускаем измерение напряжения батареи
   adcStart();
-  relayStat();
+//  relayStat();
   adcEnd();
 }
 
@@ -93,7 +93,7 @@ void csmaPause( void ){
   usTimSet( pause );
 }
 
-static void sensDataSend( void ){
+void sensDataSend( void ){
   // ---- Формируем пакет данных -----
 	pkt.payDriveType = DRIV_TYPE_REL;
   pkt.paySrcNode = rfm.nodeAddr;
@@ -110,7 +110,7 @@ static void sensDataSend( void ){
 
   rfmTransmit( &pkt );
   // Таймаут до окончания передачи
-  usTimSet( TX_DURAT*10 );
+//  usTimSet( TX_DURAT*10 );
 
 }
 

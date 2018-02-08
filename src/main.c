@@ -11,6 +11,8 @@
 #include "process.h"
 #include "main.h"
 
+extern uint8_t regBuf[0x50];
+
 volatile uint32_t mTick;
 
 volatile tDriveData driveData;    // Структура измеряемых датчиком параметров
@@ -38,15 +40,24 @@ int main(int argc, char* argv[]) {
   rfmInit();
   adcInit();      // Инициализация АЦП для измерения напряжения питания и температуры прибора
   ledInit();
-  relayInit();
-  timeInit();
-  usTimInit();
+//  relayInit();
+//  timeInit();
+//  usTimInit();
 //  errTimInit();
   mesure();
   // Пробуем передавать данные серверу?
-  csmaRun();
+//  csmaRun();
+  for( uint8_t i = 1; i < 0x50; i++ ){
+    regBuf[i] = rfmRegRead( i );
+  }
   // Infinite loop
   while (1) {
+    rfmSetMode_s( REG_OPMODE_TX );
+    sensDataSend();
+    while( (rfmRegRead(REG_FLAG2) & REG_IF2_TX_SENT) != REG_IF2_TX_SENT)
+    {}
+    rfmSetMode_s( REG_OPMODE_SLEEP );
+    mDelay(5000);
   }
   // Infinite loop, never return.
 }
@@ -82,34 +93,39 @@ static void SetSysClock(void)
   while( (RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI)
   {}
 
-  /* HCLK = SYSCLK */
-  RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV1;
+  // HCLK = SYSCLK
+//  RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV1;
+  RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV2;
 
-  /* PCLK = HCLK */
+  // PCLK = HCLK
   RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE_DIV1;
 
   // Select SYSCLK -> I2C clock source
   RCC->CFGR3 &= ~RCC_CFGR3_I2C1SW;
 
-  /* Enable PLL */
+  // Enable PLL
   RCC->CR &= ~RCC_CR_PLLON;
-  /* Wait till PLL is ready */
+  // Wait till PLL is ready
   while((RCC->CR & RCC_CR_PLLRDY) == 1)
   {}
   RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL);
   RCC->CFGR |= RCC_CFGR_PLLMUL12;
 
-  /* Enable PLL */
+  // Enable PLL
   RCC->CR |= RCC_CR_PLLON;
-  /* Wait till PLL is ready */
+  // Wait till PLL is ready
   while((RCC->CR & RCC_CR_PLLRDY) == 0)
   {}
 
-  RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;
-
-  /* Wait till PLL is used as system clock source */
-  while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS) != (uint32_t)RCC_CFGR_SWS_PLL)
+//  RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;
+//  // Wait till PLL is used as system clock source
+//  while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS) != (uint32_t)RCC_CFGR_SWS_PLL)
+//  {}
+  RCC->CFGR |= (uint32_t)RCC_CFGR_SW_HSI;
+  // Wait till PLL is used as system clock source
+  while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS) != (uint32_t)RCC_CFGR_SWS_HSI)
   {}
+
   FLASH->ACR |= FLASH_ACR_LATENCY;
 
   RCC_GetClocksFreq(&RCC_Clocks);
