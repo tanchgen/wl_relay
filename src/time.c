@@ -46,6 +46,9 @@ void rtcInit(void){
   RCC->BDCR &= ~RCC_BDCR_BDRST;
 
   RCC->BDCR |= RCC_BDCR_LSEON;
+
+  while( ( PWR->CR & PWR_CR_DBP) == 0 )
+  {}
   while((RCC->BDCR & RCC_BDCR_LSERDY)!=RCC_BDCR_LSERDY)
   {}
 
@@ -54,15 +57,15 @@ void rtcInit(void){
 
   RTC->WPR = 0xCA;
   RTC->WPR = 0x53;
-  RTC->CR &=~ RTC_CR_ALRAE;
-  while((RTC->ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF)
-  {}
   RTC->ISR |= RTC_ISR_INIT;
   while((RTC->ISR & RTC_ISR_INITF)!=RTC_ISR_INITF)
   {}
   RTC->PRER = 0x007F00FF;
   RTC->ISR &= ~RTC_ISR_INIT;
 
+  RTC->CR &=~ RTC_CR_ALRAE;
+  while((RTC->ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF)
+  {}
   // Устанавливаем секунды в будильник - разбиваем все ноды на 60 групп
   RTC->ALRMAR = (uint32_t)(BIN2BCD(rfm.nodeAddr % 60));
   RTC->ALRMAR |= RTC_ALRMAR_MSK4 | RTC_ALRMAR_MSK3 | RTC_ALRMAR_MSK2 | RTC_ALRMAR_MSK1;
@@ -238,6 +241,8 @@ void timeInit( void ) {
   rtc.sec = 0;;
   rtc.ss = 0;
 
+  while( (RTC->ISR & RTC_ISR_RSF) == 0)
+  {}
   RTC_SetDate( &rtc );
   RTC_SetTime( &rtc );
   // Интервал будильника - измерение минуты
@@ -246,8 +251,6 @@ void timeInit( void ) {
   minToutRx = 1;
   // Интервал будильника - секунды
   secTout = 10;
-  while( (RTC->ISR & RTC_ISR_RSF) == 0)
-  {}
   while( RTC->DR == 0x2101 )
   {}
   getRtcTime();
@@ -397,7 +400,7 @@ void correctAlrm( void ){
   RTC_CorrAlrm( &tmpRtc );
 }
 
-void setAlrmMask( uint8_t secMask ){
+void setAlrmSecMask( uint8_t secMask ){
   RTC->WPR = 0xCA;
   RTC->WPR = 0x53;
   RTC->ISR |= RTC_ISR_INIT;

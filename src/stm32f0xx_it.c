@@ -90,6 +90,11 @@ void TIM2_IRQHandler( void ){
   usTimHandler();
 }
 
+void TIM6_IRQHandler( void ){
+  usTimStop();
+  usTimHandler();
+}
+
 /**
 * RTC global interrupt through EXTI lines 17, 19 and 20.
 */
@@ -154,19 +159,7 @@ void EXTI0_1_IRQHandler(void)
     // Приняли команду.
 
     driveData.rssi = rfmRegRead( REG_RSSI_VAL );
-//    uint8_t i;
-//    rssiVol[0] = rfmRegRead( REG_RSSI_VAL );
     rfmReceive( &rxPkt );
-//    if( rxPkt.paySrcNode == 209){
-//      i = 3;
-//    }
-//    else if( rxPkt.paySrcNode == 9){
-//      i = 2;
-//    }
-//    else {
-//      i = 1;
-//    }
-//    rssiVol[i] = rssiVol[0];
     rfmRecvStop();
     driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
     // Включаем - Выключаем реле
@@ -177,8 +170,8 @@ void EXTI0_1_IRQHandler(void)
     // Отправляем отклик
     csmaRun();
     if( connect == FALSE ){
-      setAlrmMask( RESET );
-      connect = FALSE;
+      setAlrmSecMask( RESET );
+      connect = TRUE;
     }
   }
   else if( rfm.mode == MODE_TX ) {
@@ -226,6 +219,70 @@ void EXTI2_3_IRQHandler( void ){
 
   return;
 }
+
+void WWDG_IRQHandler(void){ while(1) {} }
+
+void
+FLASH_IRQHandler(void){ while(1){} }
+
+void
+EXTI4_15_IRQHandler(void){ while(1){} }
+
+
+void
+ADC1_IRQHandler(void){ while(1){} }
+
+void
+TIM1_BRK_UP_TRG_COM_IRQHandler(void){ while(1){} }
+
+void
+TIM1_CC_IRQHandler(void){ while(1){} }
+
+void
+TIM3_IRQHandler(void){ while(1){} }
+
+void
+TIM6_DAC_IRQHandler(void){ while(1){} }
+void
+TIM14_IRQHandler(void){ while(1){} }
+void
+TIM15_IRQHandler(void){ while(1){} }
+void
+TIM16_IRQHandler(void){ while(1){} }
+void
+TIM17_IRQHandler(void){ while(1){} }
+void
+I2C1_IRQHandler(void){ while(1){} }
+void
+I2C2_IRQHandler(void){ while(1){} }
+void
+SPI1_IRQHandler(void){ while(1){} }
+void
+SPI2_IRQHandler(void){ while(1){} }
+void
+USART1_IRQHandler(void){ while(1){} }
+void
+USART2_IRQHandler(void){ while(1){} }
+
+void
+PVD_VDDIO2_IRQHandler(void){ while(1){} }
+void
+VDDIO2_IRQHandler(void){ while(1){} }
+void
+RCC_CRS_IRQHandler(void){ while(1){} }
+void
+TSC_IRQHandler(void){ while(1){} }
+void
+TIM7_IRQHandler(void){ while(1){} }
+void
+USART3_4_IRQHandler(void){ while(1){} }
+void
+USART3_6_IRQHandler(void){ while(1){} }
+void
+USART3_8_IRQHandler(void){ while(1){} }
+
+void
+USB_IRQHandler(void){ while(1){} }
 
 #if 0
 /**

@@ -128,7 +128,10 @@ void rfmSetMode_s( uint8_t mode ){
 	if( rfm.mode == (mode >> 2) ){
   	goto exit;
   }
-  rfmRegWrite( REG_OPMODE, mode );
+  while( (rc = dioRead(DIO_MODEREADY)) == 0 )
+  {}
+
+	rfmRegWrite( REG_OPMODE, mode );
 
   while( (rc = dioRead(DIO_MODEREADY)) == 0 )
   {}

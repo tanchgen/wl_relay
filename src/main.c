@@ -82,34 +82,35 @@ static void SetSysClock(void)
   while( (RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI)
   {}
 
-  /* HCLK = SYSCLK */
+  // HCLK = SYSCLK
   RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV1;
+//  RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV2;
 
-  /* PCLK = HCLK */
+  // PCLK = HCLK
   RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE_DIV1;
 
   // Select SYSCLK -> I2C clock source
   RCC->CFGR3 &= ~RCC_CFGR3_I2C1SW;
 
-  /* Enable PLL */
+  // Enable PLL
   RCC->CR &= ~RCC_CR_PLLON;
-  /* Wait till PLL is ready */
+  // Wait till PLL is ready
   while((RCC->CR & RCC_CR_PLLRDY) == 1)
   {}
   RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL);
   RCC->CFGR |= RCC_CFGR_PLLMUL12;
 
-  /* Enable PLL */
+  // Enable PLL
   RCC->CR |= RCC_CR_PLLON;
-  /* Wait till PLL is ready */
+  // Wait till PLL is ready
   while((RCC->CR & RCC_CR_PLLRDY) == 0)
   {}
 
   RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;
-
-  /* Wait till PLL is used as system clock source */
+  // Wait till PLL is used as system clock source
   while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS) != (uint32_t)RCC_CFGR_SWS_PLL)
   {}
+
   FLASH->ACR |= FLASH_ACR_LATENCY;
 
   RCC_GetClocksFreq(&RCC_Clocks);
@@ -122,4 +123,3 @@ static void SetSysClock(void)
   NVIC_EnableIRQ(SysTick_IRQn);
 
 }
-
