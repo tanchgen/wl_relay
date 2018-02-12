@@ -69,7 +69,6 @@ void adcStart( void ){
 
 void adcEnd( void ){
 //  int32_t temperature;
-  uint32_t vref;
   uint32_t vdd;
   uint32_t vbat;
   uint32_t vrefCal = *((uint16_t *)0x1FFFF7BA);

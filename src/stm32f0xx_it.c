@@ -10,7 +10,7 @@
 
 uint8_t connect = FALSE;
 
-// uint8_t rssiVol[6];
+volatile uint8_t rfmReg;
 
 extern uint8_t wutCount;
 extern struct tWutTest {
@@ -161,17 +161,21 @@ void EXTI0_1_IRQHandler(void)
     driveData.rssi = rfmRegRead( REG_RSSI_VAL );
     rfmReceive( &rxPkt );
     rfmRecvStop();
-    driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
-    // Включаем - Выключаем реле
-    (rxPkt.payLoad.cmdMsg.cmdNum & 0x01)? relay1On(): relay1Off();
-    (rxPkt.payLoad.cmdMsg.cmdNum & 0x02)? relay2On(): relay2Off();
-    // Обновляем состояние устройства
-    mesure();
-    // Отправляем отклик
-    csmaRun();
-    if( connect == FALSE ){
-      setAlrmSecMask( RESET );
-      connect = TRUE;
+    if( rxPkt.payDriveType == DRIV_TYPE_REL){
+      driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
+      // Включаем - Выключаем реле
+      (rxPkt.payLoad.cmdMsg.cmd & 0x01)? relay1On(): relay1Off();
+      (rxPkt.payLoad.cmdMsg.cmd & 0x02)? relay2On(): relay2Off();
+      // Обновляем состояние устройства
+      mesure();
+      // Отправляем отклик
+      csmaRun();
+      if( connect == FALSE ){
+        setAlrmSecMask( RESET );
+        secTout = 1;
+        minTout = 6;
+        connect = TRUE;
+      }
     }
   }
   else if( rfm.mode == MODE_TX ) {
@@ -179,13 +183,15 @@ void EXTI0_1_IRQHandler(void)
   	usTimStop();
   	txEnd();
     flags.driveErr = RESET;
+    // Включаем RFM69 на RX
+    rfmSetMode_s( REG_OPMODE_RX );
   }
   // Отмечаем останов RFM_TX
 #if DEBUG_TIME
 	dbgTime.rfmTxEnd = mTick;
 #endif // DEBUG_TIME
-  // Включаем RFM69 на RX
-  rfmSetMode_s( REG_OPMODE_RX );
+//  // Включаем RFM69 на RX
+//  rfmSetMode_s( REG_OPMODE_RX );
 
 }
 

@@ -19,7 +19,7 @@ volatile uint8_t csmaCount = 0;
 tUxTime sendTryStopTime;
 static uint8_t msgNum;      // Порядковый номер отправляемого пакета
 
-static void sensDataSend( void );
+void sensDataSend( void );
 static uint32_t rngGet( void );
 
 void mesure( void ){
@@ -93,7 +93,7 @@ void csmaPause( void ){
   usTimSet( pause );
 }
 
-static void sensDataSend( void ){
+void sensDataSend( void ){
   // ---- Формируем пакет данных -----
 	pkt.payDriveType = DRIV_TYPE_REL;
   pkt.paySrcNode = rfm.nodeAddr;

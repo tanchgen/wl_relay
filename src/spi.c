@@ -10,6 +10,11 @@
 #include "main.h"
 #include "spi.h"
 
+uint8_t * prxBuf;
+uint8_t rxBufI;
+uint8_t * ptxBuf;
+uint8_t txBufI;
+
 /* SPI2 init function */
 void spiInit(void) {
 
@@ -39,21 +44,21 @@ void spiInit(void) {
   // Set Master Mode and Software control of slave select
 
   SPI2->CR1 = (SPI2->CR1 & ~(SPI_CR1_CPOL | SPI_CR1_CPHA )) \
-		| SPI_CR1_BR_1 | SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI;
+		| SPI_CR1_BR_1 | SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI;//  | SPI_CR1_CPOL | SPI_CR1_CPHA;
   // Slave select output enabled
-  SPI2->CR2 |= SPI_CR2_FRXTH; //SPI_CR2_SSOE;
+  SPI2->CR2 |= SPI_CR2_FRXTH;// | SPI_CR2_TXEIE | SPI_CR2_RXNEIE;
   // SPI включается непосредственно перед пердачей или приемом
 //  SPI2->CR1 |= SPI_CR1_SPE;
+
 }
-
-
-
 
 // Передача по SPI в блокирующем режима
 int8_t spiTrans_s( uint8_t *buf, uint8_t len ){
+  uint8_t txCount = len;
   uint32_t tout;
+  uint8_t nullrx;
 
-  // 	Таймаут ~10мс или около того...
+  // На всю операцию отводим не более 10мс
   tout = 20000;
   // NSS -> 0
   GPIOB->BRR |= GPIO_Pin_12;
@@ -61,15 +66,20 @@ int8_t spiTrans_s( uint8_t *buf, uint8_t len ){
   SPI2->CR1 |= SPI_CR1_SPE;
   // Отправка из буфера tx в буфер SPI
   while( len ){
-    if( ((SPI2->SR & SPI_SR_TXE) != 0 )){
+    if( txCount && ((SPI2->SR & SPI_SR_TXE) != 0) ){
       *(uint8_t *)&(SPI2->DR) = *buf++;
+      txCount--;
+    }
+    if( (SPI2->SR & SPI_SR_RXNE) != 0 ){
+      nullrx = (uint8_t)(SPI2->DR);
+      (void)nullrx;
       len--;
     }
     if( --tout == 0){
       return -1;
     }
   }
-  // Ждем окончания передачи
+  // Ждем окончания приема
   tout = 20000;
   while( (SPI2->SR & SPI_SR_BSY) != 0 ){
     if( --tout == 0){
@@ -100,7 +110,7 @@ int8_t spiRecv_s( uint8_t *buf, uint8_t len ){
       txCount--;
     }
     if( (SPI2->SR & SPI_SR_RXNE) != 0 ){
-      *buf++ = *(uint8_t *)&(SPI2->DR);
+      *buf++ = (uint8_t)(SPI2->DR);
       len--;
     }
     if( --tout == 0){
@@ -138,7 +148,7 @@ int8_t spiTransRecv_s( uint8_t *txBuf, uint8_t *rxBuf, uint8_t len ){
       txCount--;
     }
     if( (SPI2->SR & SPI_SR_RXNE) != 0 ){
-      *rxBuf++ = *(uint8_t *)&(SPI2->DR);
+      *rxBuf++ = (uint8_t)(SPI2->DR);
       len--;
     }
     if( --tout == 0){
@@ -159,4 +169,3 @@ int8_t spiTransRecv_s( uint8_t *txBuf, uint8_t *rxBuf, uint8_t len ){
 
   return 0;
 }
-

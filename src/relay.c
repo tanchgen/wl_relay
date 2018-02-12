@@ -41,20 +41,19 @@ void relayStat( void ){
   tmpPin = GPIOB->IDR & GPIO_Pin_6;
   if( tmpPin ){
     relayState.relStat.st1 = SET;
-    ledR1On();
+//    ledR1On();
   }
   else {
     relayState.relStat.st1 = RESET;
-    ledR1Off();
+//    ledR1Off();
   }
   if((GPIOB->ODR & GPIO_Pin_6) == tmpPin){
-    ledBlinkR1 = 0;
+//    ledBlinkR1 = 0;
     relayState.relStat.err1 = RESET;
   }
   else {
     // Ошибка - запускаем таймер мигания светодиодов
-    ledBlinkR1 = LED_BLINK_TIME;
-    ledBlinkR1 = RESET;
+//    ledBlinkR1 = LED_BLINK_TIME;
     relayState.relStat.err1 = SET;
     flags.driveErr = SET;
   }
@@ -63,21 +62,33 @@ void relayStat( void ){
   tmpPin = GPIOB->IDR & GPIO_Pin_7;
   if( tmpPin ){
     relayState.relStat.st2 = SET;
-    ledR2On();
+//    ledR2On();
   }
   else {
     relayState.relStat.st2 = RESET;
-    ledR2Off();
+//    ledR2Off();
   }
-  if((GPIOB->ODR & GPIO_Pin_6) == tmpPin){
-    ledBlinkR1 = 0;
-    relayState.relStat.err1 = RESET;
+  if((GPIOB->ODR & GPIO_Pin_7) == tmpPin){
+//    ledBlinkR2 = 0;
+    relayState.relStat.err2 = RESET;
   }
   else {
     // Ошибка - запускаем таймер мигания светодиодов
-    ledBlinkR2 = LED_BLINK_TIME;
-    relayState.relStat.err1 = SET;
+//    ledBlinkR2 = LED_BLINK_TIME;
+    relayState.relStat.err2 = SET;
     flags.driveErr = SET;
+  }
+
+  // Управление ОДНИМ светодиодом
+  if( relayState.relStat.err1 || relayState.relStat.err2){
+    // Ошибка одного из двух реле
+    ledBlinkR1 = LED_BLINK_TIME;
+  }
+  else if( relayState.relStat.st1 || relayState.relStat.st2){
+    ledR1On();
+  }
+  else{
+    ledR1Off();
   }
 
   driveData.devState = relayState.u8;

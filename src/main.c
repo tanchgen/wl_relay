@@ -18,6 +18,8 @@ volatile eState state;          // Состояние машины
 volatile tFlags flags;          // Флаги состояний системы
 RCC_ClocksTypeDef RCC_Clocks;
 
+tPkt rxPkt;
+
 static void SetSysClock(void);
 
 // ----- main() ---------------------------------------------------------------
@@ -39,14 +41,29 @@ int main(int argc, char* argv[]) {
   adcInit();      // Инициализация АЦП для измерения напряжения питания и температуры прибора
   ledInit();
   relayInit();
+
   timeInit();
   usTimInit();
 //  errTimInit();
   mesure();
   // Пробуем передавать данные серверу?
   csmaRun();
+
   // Infinite loop
   while (1) {
+//    // !!! Дебажим  регистры !!!
+//    for( uint8_t i = 1; i < 0x40; i++ ){
+//      regBuf[i] = rfmRegRead( i );
+//    }
+//    sensDataSend();
+//    // Опустошаем FIFO
+//    while( dioRead(DIO_PAYL_RDY) == RESET )
+//    {}
+//    rfmSetMode_s( REG_OPMODE_SLEEP );
+//    // !!! Дебажим  регистры !!!
+//    for( uint8_t i = 1; i < 0x40; i++ ){
+//      regBuf[i] = rfmRegRead( i );
+//    }
   }
   // Infinite loop, never return.
 }

@@ -62,7 +62,7 @@
 #define CONCAT1( x )   (x ## _PIN)
 #define CONCAT2( x )   (x ## _PORT)
 
-#define dioRead( a )      ((CONCAT2( a )->IDR) & (CONCAT1( a )))? 1: 0
+#define dioRead( a )      (((CONCAT2( a )->IDR) & (CONCAT1( a )))? 1: 0)
 
 /* ------------------- Регистры параметров модуля ------------------------------------
  * Забугорные коллеги пишут, что есть 5 правил для выбора параметров в данном модуле.
@@ -216,8 +216,6 @@
 #define CHANN8_3_FREQ     (0x6c5b45L)   // (433425000 / Fstep) Начальная частота "третьего" канала 433Мгц
 #define CHANN8_MAX            7
 
-
-
 #define NET_ID            0x0101          // Идентификатор сети
 //#define CHANN_DEF         ((NET_ID % 8)+1)   // RF-канал по умолчанию
 #define CHANN_DEF         0x03   // RF-канал по умолчанию
@@ -311,6 +309,8 @@ typedef struct {
 
 extern tPkt pkt;
 extern tRfm  rfm;
+
+extern uint8_t regBuf[0x50];
 
 
 uint8_t rfmRegRead( uint8_t add_r );

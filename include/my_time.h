@@ -1,4 +1,4 @@
-﻿﻿/*
+/*
  * my_time.h
  *
  *  Created on: 31 окт. 2017 г.
@@ -86,7 +86,7 @@ void RTC_GetTime( volatile tRtc * prtc );
 void setAlrm( tUxTime xtime );
 tUxTime getAlrm( void );
 void correctAlrm( void );
-void setAlrmMask( uint8_t secMask );
+void setAlrmSecMask( uint8_t secMask );
 
 void usTimInit( void );
 void usTimStop( void );

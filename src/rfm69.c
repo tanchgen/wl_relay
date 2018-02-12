@@ -40,7 +40,7 @@ void rfmRst( void ){
 // Чтение значения регистра
 uint8_t rfmRegRead( uint8_t addr ){
   uint8_t rxData[2];
-  uint8_t txData[2];
+  uint8_t txData[2] = { 0, 0xFF };
 
   // Выставляем бит "чтение"
   txData[0] = addr & 0x7F;
@@ -75,8 +75,6 @@ void rfmInit( void ){
   rfmRst();
   // Установка начальных значений регистров
   rfmRegSetup();
-
-  rfmSetMode_s( REG_OPMODE_RX );
 }
 
 
@@ -133,7 +131,7 @@ void rfmSetMode_s( uint8_t mode ){
 
 	rfmRegWrite( REG_OPMODE, mode );
 
-  while( (rc = dioRead(DIO_MODEREADY)) == 0 )
+  while( dioRead(DIO_MODEREADY) == 0 )
   {}
 
   rfm.mode = mode >> 2;
@@ -323,7 +321,7 @@ static inline void rfDataInit( void ){
   rfm.netId = NET_ID;
   rfm.channel = CHANN_DEF;
   rfm.nodeAddr = NODE_ADDR;
-//  rfm.nodeAddr = BCRT_ADDR;
+  // rfm.nodeAddr = BCRT_ADDR;
   rfm.txPwr = TX_PWR_10;
 }
 
@@ -363,7 +361,7 @@ static inline void rfmRegSetup( void ){
   // Настройка bitrate
   rfmRegWrite( REG_BR_MSB, 0x1A );   // Default
   rfmRegWrite( REG_BR_LSB, 0x0B );   // Default
-//  rfmRegWrite( REG_BR_MSB, RF_BR_MSB ); 
+//  rfmRegWrite( REG_BR_MSB, RF_BR_MSB );
 //  rfmRegWrite( REG_BR_LSB, RF_BR_LSB );
   // Настройка девиации частоты
   rfmRegWrite( REG_FDEV_MSB, 0x00 );

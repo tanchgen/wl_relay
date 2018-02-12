@@ -403,10 +403,9 @@ void correctAlrm( void ){
 void setAlrmSecMask( uint8_t secMask ){
   RTC->WPR = 0xCA;
   RTC->WPR = 0x53;
-  RTC->ISR |= RTC_ISR_INIT;
-  while((RTC->ISR & RTC_ISR_INITF)!=RTC_ISR_INITF)
+  RTC->CR &=~ RTC_CR_ALRAE;
+  while ((RTC->ISR & RTC_ISR_ALRAWF) != RTC_ISR_ALRAWF)
   {}
-
   // Alarm A every day, every hour, every minute, every second
   if( secMask ){
     RTC->ALRMAR |= RTC_ALRMAR_MSK1;
@@ -414,10 +413,7 @@ void setAlrmSecMask( uint8_t secMask ){
   else {
     RTC->ALRMAR &= ~RTC_ALRMAR_MSK1;
   }
-
-  RTC->ISR &= ~RTC_ISR_INIT;
-  while( (RTC->ISR & RTC_ISR_INITF) == 0 )
-  {}
+  RTC->CR = RTC_CR_ALRAIE | RTC_CR_ALRAE;
   RTC->WPR = 0xFE;
   RTC->WPR = 0x64;
 }

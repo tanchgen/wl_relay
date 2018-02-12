@@ -99,6 +99,7 @@ extern tUxTime sendTryStopTime;
 void mesure( void );
 void usTimHandler( void );
 int8_t dataSendTry( void );
+void sensDataSend( void );
 void csmaRun( void );
 void csmaPause( void );
 void txEnd( void );         // Завершение передачи: Очистка флагов и данных.
