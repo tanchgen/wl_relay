@@ -104,8 +104,8 @@ void sensDataSend( void ){
   pkt.payTemp = driveData.temp;
 
   // Передаем заполненую при измерении запись
-//  pkt.nodeAddr = BCRT_ADDR;
-  pkt.nodeAddr = 0xD1;
+  pkt.nodeAddr = BRDCAST_ADDR;
+//  pkt.nodeAddr = 0xD1;
   // Длина payload = 1(nodeAddr) + 1(msgNum) + 1(bat) + 2(temp)
   pkt.payLen = sizeof(tDriveMsg);
 

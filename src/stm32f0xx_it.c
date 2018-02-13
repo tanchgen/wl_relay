@@ -162,6 +162,8 @@ void EXTI0_1_IRQHandler(void)
     rfmReceive( &rxPkt );
     rfmRecvStop();
     if( rxPkt.payDriveType == DRIV_TYPE_REL){
+      ledGreenOn();
+      ledBlinkGreen = LED_BLINK_TIME;
       driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
       // Включаем - Выключаем реле
       (rxPkt.payLoad.cmdMsg.cmd & 0x01)? relay1On(): relay1Off();
