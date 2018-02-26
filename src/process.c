@@ -104,15 +104,17 @@ void sensDataSend( void ){
   pkt.payTemp = driveData.temp;
 
   // Передаем заполненую при измерении запись
-  pkt.nodeAddr = BRDCAST_ADDR;
+  pkt.nodeAddr = BCRT_ADDR;
 //  pkt.nodeAddr = 0xD1;
   // Длина payload = 1(nodeAddr) + 1(msgNum) + 1(bat) + 2(temp)
-  pkt.payLen = sizeof(tDriveMsg);
+  pkt.payLen = 5;//sizeof(tDriveMsg);
 
   rfmTransmit( &pkt );
   // Таймаут до окончания передачи
   usTimSet( TX_DURAT*10 );
-
+  // Зажигаем красный светодиод
+  ledR1On();
+  ledBlinkR1 = LED_BLINK_TIME;
 }
 
 void txEnd( void ){

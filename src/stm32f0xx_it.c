@@ -66,8 +66,9 @@ void SysTick_Handler(void) {
   // Таймер переключения светодиода Реле1
   if(ledBlinkR1 > 0){
     if(ledBlinkR1 == 1){
-      ledR1Toggle();
-      ledBlinkR1 = LED_BLINK_TIME;
+      ledR1Off();
+//      ledR1Toggle();
+//      ledBlinkR1 = LED_BLINK_TIME;
     }
     else {
       ledBlinkR1--;
@@ -185,15 +186,16 @@ void EXTI0_1_IRQHandler(void)
   	usTimStop();
   	txEnd();
     flags.driveErr = RESET;
+
     // Включаем RFM69 на RX
-    rfmSetMode_s( REG_OPMODE_RX );
+    rfmSetMode_s( REG_OPMODE_SLEEP );
   }
   // Отмечаем останов RFM_TX
 #if DEBUG_TIME
 	dbgTime.rfmTxEnd = mTick;
 #endif // DEBUG_TIME
 //  // Включаем RFM69 на RX
-//  rfmSetMode_s( REG_OPMODE_RX );
+  rfmSetMode_s( REG_OPMODE_RX );
 
 }
 
