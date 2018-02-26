@@ -333,6 +333,8 @@ uint16_t channelSearch( uint16_t count );
 void rfmChannelSet( uint16_t channel );
 void rfmFeiStart( void );
 void rfmFeiSet( void );
+void rfmFreqSet( uint32_t freq );
+
 
 
 #endif /* RFM69_H_ */

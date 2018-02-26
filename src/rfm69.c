@@ -11,8 +11,6 @@
 #include "spi.h"
 #include "rfm69.h"
 
-void rfmFreqSet( uint32_t freq );
-
 tRfm  rfm;
 tPkt pkt;            // Структура принятого пакета
 //extern uint8_t tmpVal;
@@ -371,15 +369,25 @@ static inline void rfmRegSetup( void ){
 // -------------- Bitrate ------------------------
 #if 1
   // Настройка bitrate
-  rfmRegWrite( REG_BR_MSB, 0x0D );   	// 9600 bit/s
-  rfmRegWrite( REG_BR_LSB, 0x05 );   	//
+  rfmRegWrite( REG_BR_MSB, 0x06 );    // 19200 bit/s
+  rfmRegWrite( REG_BR_LSB, 0x83 );    //
   // Настройка девиации частоты
   rfmRegWrite( REG_FDEV_MSB, 0x00 );
-  rfmRegWrite( REG_FDEV_LSB, 0x76 );  // 7200 Hz
+  rfmRegWrite( REG_FDEV_LSB, 0xEC );  // 14402 Hz
   // Настройка BW-фильтра
-  rfmRegWrite( REG_RX_BW, 0x4D );			// 12500 Hz
+  rfmRegWrite( REG_RX_BW, 0x8C );     // 12500 Hz
   // Настройка AFC Bw
-  rfmRegWrite( REG_AFC_BW, 0x8C );		// 25000 Hz
+  rfmRegWrite( REG_AFC_BW, 0x8B );    // 25000 Hz
+//  // Настройка bitrate
+//  rfmRegWrite( REG_BR_MSB, 0x0D );   	// 9600 bit/s
+//  rfmRegWrite( REG_BR_LSB, 0x05 );   	//
+//  // Настройка девиации частоты
+//  rfmRegWrite( REG_FDEV_MSB, 0x00 );
+//  rfmRegWrite( REG_FDEV_LSB, 0x76 );  // 7200 Hz
+//  // Настройка BW-фильтра
+//  rfmRegWrite( REG_RX_BW, 0x4D );			// 12500 Hz
+//  // Настройка AFC Bw
+//  rfmRegWrite( REG_AFC_BW, 0x8C );		// 25000 Hz
 #else
   // Настройка bitrate
   rfmRegWrite( REG_BR_MSB, 0x1A );   // Default

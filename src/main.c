@@ -27,6 +27,8 @@ static void SetSysClock(void);
 int main(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
+
+  uint32_t chFr = 0xd9399a;
   // Send a greeting to the trace device (skipped on Release).
 //  trace_puts("Hello ARM World!");
 
@@ -47,17 +49,19 @@ int main(int argc, char* argv[]) {
   mesure();
   // Пробуем передавать данные серверу?
 //  csmaRun();
-  for( uint8_t i = 1; i < 0x50; i++ ){
-    regBuf[i] = rfmRegRead( i );
-  }
   // Infinite loop
   while (1) {
-    rfmSetMode_s( REG_OPMODE_TX );
+    rfmFreqSet( chFr );
+    for( uint8_t i = 1; i < 0x50; i++ ){
+      regBuf[i] = rfmRegRead( i );
+    }
+//    rfmSetMode_s( REG_OPMODE_TX );
     sensDataSend();
     while( (rfmRegRead(REG_FLAG2) & REG_IF2_TX_SENT) != REG_IF2_TX_SENT)
     {}
     rfmSetMode_s( REG_OPMODE_SLEEP );
     mDelay(5000);
+    chFr += 0x666;
   }
   // Infinite loop, never return.
 }
