@@ -188,14 +188,12 @@ void EXTI0_1_IRQHandler(void)
     flags.driveErr = RESET;
 
     // Включаем RFM69 на RX
-    rfmSetMode_s( REG_OPMODE_SLEEP );
+    rfmSetMode_s( REG_OPMODE_RX );
   }
   // Отмечаем останов RFM_TX
 #if DEBUG_TIME
 	dbgTime.rfmTxEnd = mTick;
 #endif // DEBUG_TIME
-//  // Включаем RFM69 на RX
-  rfmSetMode_s( REG_OPMODE_RX );
 
 }
 
