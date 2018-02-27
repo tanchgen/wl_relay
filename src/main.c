@@ -42,24 +42,29 @@ int main(int argc, char* argv[]) {
   ledInit();
   relayInit();
 
-  timeInit();
-  usTimInit();
-//  errTimInit();
+  //  timeInit();
+  //  usTimInit();
+  ////  errTimInit();
   mesure();
-//  // Пробуем передавать данные серверу?
-  csmaRun();
+  //  // Пробуем передавать данные серверу?
+  //  csmaRun();
+
+  // Для теста передачи выключаем прерывание от DIO0
+  EXTI->IMR &= ~(DIO0_PIN);
+  EXTI->RTSR &= ~(DIO0_PIN);
+  NVIC_DisableIRQ( DIO0_EXTI_IRQn );
 
   // Infinite loop
   while (1) {
     // !!! Дебажим  регистры !!!
-//    for( uint8_t i = 1; i < 0x40; i++ ){
-//      regBuf[i] = rfmRegRead( i );
-//    }
-//    sensDataSend();
-//    while( dioRead(DIO_PAYL_RDY) == RESET )
-//    {}
-//    mDelay(2000);
-//    rfmSetMode_s( REG_OPMODE_FS );
+    for( uint8_t i = 1; i < 0x40; i++ ){
+      regBuf[i] = rfmRegRead( i );
+    }
+    sensDataSend();
+    while( dioRead(DIO_PAYL_RDY) == RESET )
+    {}
+    rfmSetMode_s( REG_OPMODE_FS );
+    mDelay(5000);
 //    // !!! Дебажим  регистры !!!
 //    for( uint8_t i = 1; i < 0x40; i++ ){
 //      regBuf[i] = rfmRegRead( i );
