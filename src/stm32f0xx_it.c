@@ -171,8 +171,8 @@ void EXTI0_1_IRQHandler(void)
       (rxPkt.payLoad.cmdMsg.cmd & 0x02)? relay2On(): relay2Off();
       // Обновляем состояние устройства
       mesure();
-      // Отправляем отклик
-      csmaRun();
+      usTimSet( 50000 );
+      state = STAT_DRIV_MESUR;
       if( connect == FALSE ){
         setAlrmSecMask( RESET );
         secTout = 1;

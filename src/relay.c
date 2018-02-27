@@ -85,10 +85,10 @@ void relayStat( void ){
     ledBlinkR1 = LED_BLINK_TIME;
   }
   else if( relayState.relStat.st1 || relayState.relStat.st2){
-    ledR1On();
+//    ledR1On();
   }
   else{
-    ledR1Off();
+//    ledR1Off();
   }
 
   driveData.devState = relayState.u8;

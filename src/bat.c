@@ -27,8 +27,8 @@ void adcInit(void){
   ADC1->CFGR1 = (ADC1->CFGR1 & ~ADC_CFGR1_EXTEN) | ADC_CFGR1_DISCEN;// | ADC_CFGR1_AUTOFF;
   // Только TSEN и VBAT канал
   ADC1->CHSELR = ADC_CHSELR_CHSEL16 | ADC_CHSELR_CHSEL17 | ADC_CHSELR_CHSEL18;
-  // Длительность сэмпла = 12.5 ADCCLK (+12.5) = 25 ADCCLK ( 5.96мкс )
-  ADC1->SMPR |= ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1;
+  // Длительность сэмпла = 23 ADCCLK (+12.5) = 55.5 ADCCLK ( 13.2мкс )
+  ADC1->SMPR |= ADC_SMPR_SMP_2 | ADC_SMPR_SMP_0;
 
   ADC->CCR |= ADC_CCR_TSEN | ADC_CCR_VREFEN;
 

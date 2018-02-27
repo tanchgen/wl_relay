@@ -33,6 +33,10 @@ void usTimHandler( void ){
 
   // По какому поводу был включен WUT? - состояние машины
   switch( state ){
+    case STAT_DRIV_MESUR:
+      // Отправляем отклик
+      csmaRun();
+      break;
     case STAT_RF_CSMA_START:
       // Канал свободен - отправляем сообщение
       // Запрещаем прерывание от RSSI
@@ -113,8 +117,8 @@ void sensDataSend( void ){
   // Таймаут до окончания передачи
   usTimSet( TX_DURAT*10 );
   // Зажигаем красный светодиод
-//  ledR1On();
-//  ledBlinkR1 = LED_BLINK_TIME;
+  ledR1On();
+  ledBlinkR1 = LED_BLINK_TIME;
 }
 
 void txEnd( void ){
