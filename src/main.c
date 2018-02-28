@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     while( dioRead(DIO_PAYL_RDY) == RESET )
     {}
     rfmSetMode_s( REG_OPMODE_FS );
-    mDelay(5000);
+    mDelay(6000);
 //    // !!! Дебажим  регистры !!!
 //    for( uint8_t i = 1; i < 0x40; i++ ){
 //      regBuf[i] = rfmRegRead( i );
