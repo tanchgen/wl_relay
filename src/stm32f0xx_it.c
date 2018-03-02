@@ -166,18 +166,22 @@ void EXTI0_1_IRQHandler(void)
       ledGreenOn();
       ledBlinkGreen = LED_BLINK_TIME;
       driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
-      // Включаем - Выключаем реле
-      (rxPkt.payLoad.cmdMsg.cmd & 0x01)? relay1On(): relay1Off();
-      (rxPkt.payLoad.cmdMsg.cmd & 0x02)? relay2On(): relay2Off();
-      // Обновляем состояние устройства
-      mesure();
-      usTimSet( 50000 );
-      state = STAT_DRIV_MESUR;
       if( connect == FALSE ){
         setAlrmSecMask( RESET );
         secTout = 1;
         minTout = 6;
         connect = TRUE;
+        // Включаем RFM69 на RX
+        rfmSetMode_s( REG_OPMODE_RX );
+      }
+      else {
+        // Включаем - Выключаем реле
+        (rxPkt.payLoad.cmdMsg.cmd & 0x01)? relay1On(): relay1Off();
+        (rxPkt.payLoad.cmdMsg.cmd & 0x02)? relay2On(): relay2Off();
+        // Обновляем состояние устройства
+        mesure();
+        usTimSet( 50000 );
+        state = STAT_DRIV_MESUR;
       }
     }
   }
@@ -216,9 +220,8 @@ void EXTI2_3_IRQHandler( void ){
 #endif // DEBUG_TIME
 
   if( csmaCount >= CSMA_COUNT_MAX ){
-    // Количество попыток и время на попытки отправить данные вышло - все бросаем до следующего раза
-  	csmaCount = 0;
-    state = STAT_READY;
+    // Количество попыток отправить данные вышло - все бросаем до следующего раза
+    txEnd();
   }
   else {
   	// Можно еще попытатся - выждем паузу

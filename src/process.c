@@ -109,7 +109,6 @@ void sensDataSend( void ){
 
   // Передаем заполненую при измерении запись
   pkt.nodeAddr = BCRT_ADDR;
-//  pkt.nodeAddr = 0xD1;
   // Длина payload = 1(nodeAddr) + 1(msgNum) + 1(bat) + 2(temp)
   pkt.payLen = sizeof(tDriveMsg);
 
@@ -122,6 +121,7 @@ void sensDataSend( void ){
 }
 
 void txEnd( void ){
+  csmaCount = 0;
   flags.sensCplt = FALSE;
   flags.batCplt = FALSE;
   state = STAT_READY;
