@@ -101,7 +101,8 @@ void sensDataSend( void ){
   // ---- Формируем пакет данных -----
 	pkt.payDriveType = DRIV_TYPE_REL;
   pkt.paySrcNode = rfm.nodeAddr;
-  pkt.payMsgNum = msgNum++;
+//  pkt.payMsgNum = msgNum++;
+  pkt.payMsgNum = 0x11;
   pkt.payBat = driveData.bat;
   pkt.payState = driveData.devState;
   pkt.payCmdNum = driveData.cmdNum;

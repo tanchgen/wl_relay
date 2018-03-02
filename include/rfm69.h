@@ -101,6 +101,7 @@
 #define REG_FRF_LSB     (uint8_t)0x09    // Младший байт величины несущей частоты
 
 #define REG_RCCAL       (uint8_t)0x0A    // Управление салибровкой RC-генератора
+#define REG_LOW_AFC     (uint8_t)0x0B
 #define REG_PA_LVL      (uint8_t)0x11    // Настройка усилителя передатчика
 #define REG_LNA         (uint8_t)0x18    // Настройки LNA
 #define REG_RX_BW       (uint8_t)0x19    // BW контроль
@@ -114,8 +115,8 @@
 #define REG_RSSI_VAL    (uint8_t)0x24  // Величина RSSI ( - RssiValue / 2 dBm )
 #define REG_DIO_MAP1    (uint8_t)0x25    // Переопределение DIO0-DIO3
 #define REG_DIO_MAP2    (uint8_t)0x26    // Переопределение DIO4, DIO5, ...
-#define REG_FLAG1   	 (uint8_t)0x27    // Флаги прерываний 1
-#define REG_FLAG2   	 (uint8_t)0x28    // Флаги прерываний 2
+#define REG_FLAG1   	   (uint8_t)0x27    // Флаги прерываний 1
+#define REG_FLAG2   	   (uint8_t)0x28    // Флаги прерываний 2
 #define REG_RSSI_THRESH (uint8_t)0x29    // RSSI граница
 #define REG_SYNC_CFG    (uint8_t)0x2E    // Конфигурация SYNC-последовательности
 #define REG_SYNC1       (uint8_t)0x2F    // Самый старший байт Sync-последовательности (NET ID)
@@ -126,7 +127,7 @@
 #define REG_BRDCAST     (uint8_t)0x3A     // Широковещательный адрес
 #define REG_FIFO_THRESH (uint8_t)0x3C    // Количество байт в FIFO для начала передачи
 #define REG_TEST_DAGC   (uint8_t)0x6F    // Настройка DAGC
-
+#define REG_TEST_AFC    (uint8_t)0x71    // Настройка AFC
 
 #define REG_LNA_ZIN_50    (uint8_t)0x80    // Входное сопротивление = 50 Ом
 #define REG_LNA_ZIN_200   (uint8_t)0x00    // Входное сопротивление = 200 Ом
@@ -218,7 +219,7 @@
 
 #define NET_ID            0x0101          // Идентификатор сети
 //#define CHANN_DEF         ((NET_ID % 8)+1)   // RF-канал по умолчанию
-#define CHANN_DEF         0x07   // RF-канал по умолчанию
+#define CHANN_DEF         0x03   // RF-канал по умолчанию
 #define NODE_ADDR         0xD3            // Собственный адрес нода по умолчанию
 #define BCRT_ADDR         0x00            // Адрес БКРТ-255
 #define BRDCAST_ADDR      0xFF            // Широковещательный адрес
