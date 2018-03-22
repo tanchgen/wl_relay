@@ -373,7 +373,9 @@ static inline void rfmRegSetup( void ){
   rfmRegWrite( REG_PACK_CFG, REG_PACK_CFG_VAR | REG_PACK_CFG_CRCON | REG_PACK_CFG_ADDRBRD);
 
   // Настройка минимальной рабочей границы  RSSI ( -114дБ )
-  rfmRegWrite( REG_RSSI_THRESH, 0xE4 );
+//  rfmRegWrite( REG_RSSI_THRESH, 0xE4 );
+  // Настройка минимальной рабочей границы  RSSI ( -100дБ )
+  rfmRegWrite( REG_RSSI_THRESH, 0xC8 );
   // Настройка минимальной рабочей границы  RSSI ( -90дБ )
   // rfmRegWrite( REG_RSSI_THRESH, 0xB4 );
 
