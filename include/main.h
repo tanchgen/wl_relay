@@ -41,6 +41,7 @@ enum{
 
 typedef enum {
   STAT_READY,
+  STAT_CONNECT,
   STAT_SENS_MESUR,
   STAT_SENS_READ,
   STAT_SENS_CPLT,

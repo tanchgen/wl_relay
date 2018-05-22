@@ -171,8 +171,9 @@ void EXTI0_1_IRQHandler(void)
         secTout = 1;
         minTout = 6;
         connect = TRUE;
-        // Включаем RFM69 на RX
-        rfmSetMode_s( REG_OPMODE_RX );
+        // Включим RFM69 на RX через 50мс
+        usTimSet( 50000 );
+        state = STAT_CONNECT;
       }
       else {
         // Включаем - Выключаем реле

@@ -25,8 +25,12 @@ void adcInit(void){
   ADC1->CFGR2 = ADC_CFGR2_CKMODE_0;
   // Включаем программный запуск и AUTOFF
   ADC1->CFGR1 = (ADC1->CFGR1 & ~ADC_CFGR1_EXTEN) | ADC_CFGR1_DISCEN;// | ADC_CFGR1_AUTOFF;
-  // Только TSEN и VBAT канал
-  ADC1->CHSELR = ADC_CHSELR_CHSEL16 | ADC_CHSELR_CHSEL17 | ADC_CHSELR_CHSEL18;
+
+  // Только TSEN-канал и VDD
+  ADC1->CHSELR = ADC_CHSELR_CHSEL16 | ADC_CHSELR_CHSEL17;
+
+  // Только TSEN и VBAT каналы и VDD
+//  ADC1->CHSELR = ADC_CHSELR_CHSEL16 | ADC_CHSELR_CHSEL17 | ADC_CHSELR_CHSEL18;
   // Длительность сэмпла = 23 ADCCLK (+12.5) = 55.5 ADCCLK ( 13.2мкс )
   ADC1->SMPR |= ADC_SMPR_SMP_2 | ADC_SMPR_SMP_0;
 
@@ -70,7 +74,9 @@ void adcStart( void ){
 void adcEnd( void ){
 //  int32_t temperature;
   uint32_t vdd;
+#if 0// ---------------- Батарея не устанавливается - ее не измеряем -------------------
   uint32_t vbat;
+#endif
   uint32_t vrefCal = *((uint16_t *)0x1FFFF7BA);
   uint16_t temp110Cal = *((uint16_t *) 0x1FFFF7C2);
   uint16_t temp30Cal = *((uint16_t *) 0x1FFFF7B8);
@@ -93,6 +99,7 @@ void adcEnd( void ){
   {}
   vdd = (VDD_CALIB * vrefCal)/(ADC1->DR);
 
+#if 0// ---------------- Батарея не устанавливается - ее не измеряем -------------------
   // Меряем VBAT
   ADC1->CR |= ADC_CR_ADSTART;
   while( (ADC1->ISR & ADC_ISR_EOC) != ADC_ISR_EOC )
@@ -102,7 +109,7 @@ void adcEnd( void ){
   ADC1->CR |= ADC_CR_ADDIS;
   // Стираем флаги
   ADC1->ISR |= 0xFF; //ADC_ISR_EOS | ADC_ISR_EOC | ADC_ISR_EOSMP;
-
+#endif
 
   mcuTemp *= vdd;
   mcuTemp /= VDD_CALIB;
@@ -110,7 +117,11 @@ void adcEnd( void ){
   mcuTemp *= (int32_t)(110 - 30);
   mcuTemp /= (int32_t)(temp110Cal - temp30Cal);
   driveData.temp = (int16_t)(mcuTemp + 30);
+#if 0// ---------------- Батарея не устанавливается - ее не измеряем -------------------
   driveData.bat = (vdd * vbat / (4096 / 2) )/10 - 150;
+#else
+  driveData.bat = (vdd/10) - 150;
+#endif
 
   if( (driveData.temp > TEMP_TRESH) || driveData.bat < BAT_TRESH ){
     flags.driveErr = SET;

@@ -33,6 +33,11 @@ void usTimHandler( void ){
 
   // По какому поводу был включен WUT? - состояние машины
   switch( state ){
+    case STAT_CONNECT:
+    // Включаем RFM69 на RX
+      rfmSetMode_s( REG_OPMODE_RX );
+      state = STAT_READY;
+      break;
     case STAT_DRIV_MESUR:
       // Отправляем отклик
       csmaRun();
@@ -48,14 +53,14 @@ void usTimHandler( void ){
     	dbgTime.rfmRxEnd = mTick;
     #endif // DEBUG_TIME
 
-    	rfmSetMode_s( REG_OPMODE_SLEEP );
+    	rfmSetMode_s( REG_OPMODE_STDBY );
       // Отправить сообщение
       correctAlrm();
       state = STAT_TX_START;
       sensDataSend();
       break;
     case STAT_TX_START:
-    	rfmSetMode_s( REG_OPMODE_SLEEP );
+    	rfmSetMode_s( REG_OPMODE_STDBY );
       txEnd();
       break;
 
