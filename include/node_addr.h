@@ -10,12 +10,12 @@
 
 #ifndef CHAN_DEF
 // Номер RF-канала по умолчанию
-#define CHANN_DEF         0x02
+#define CHANN_DEF         0x00
 #endif
 
 #ifndef NODE_ADDR
 // Собственный адрес нода по умолчанию
-#define NODE_ADDR         0x52
+#define NODE_ADDR         0x53
 
 #endif
 
