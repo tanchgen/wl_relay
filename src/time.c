@@ -19,7 +19,7 @@ volatile tUxTime uxTime;
 volatile uint8_t sendToutFlag = SET;
 volatile uint8_t minTout;
 volatile uint8_t minToutRx;
-volatile uint8_t secTout;
+volatile uint8_t uxSecTout;
 
 // Для тестирования - массив интервалов таймера WUT
 uint8_t wutCount;
@@ -250,7 +250,7 @@ void timeInit( void ) {
   // Интервал будильника - передача минуты
   minToutRx = 1;
   // Интервал будильника - секунды
-  secTout = 10;
+  uxSecTout = 10;
   while( RTC->DR == 0x2101 )
   {}
   getRtcTime();

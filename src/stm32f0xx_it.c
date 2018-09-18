@@ -124,7 +124,7 @@ void RTC_IRQHandler(void){
     if( wutCount == 20){
       wutCount = 0;
     }
-    if( ((rtc.sec % secTout) == 0) ){
+    if( ((rtc.sec % uxSecTout) == 0) ){
       if( ((rtc.min % minTout) == 0) ){
 				// Alarm A interrupt
 				if(state == STAT_READY){
@@ -169,7 +169,7 @@ void EXTI0_1_IRQHandler(void)
       driveData.cmdNum = rxPkt.payLoad.cmdMsg.cmdNum;
       if( connect == FALSE ){
         setAlrmSecMask( RESET );
-        secTout = 1;
+        uxSecTout = 1;
         minTout = 6;
         connect = TRUE;
         // Включим RFM69 на RX через 50мс
