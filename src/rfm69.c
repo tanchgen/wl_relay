@@ -240,7 +240,7 @@ uint8_t rfmReceive( tPkt * pkt ){
 
 void rfmRecvStop( void ){
   // Выключаем RFM69
-  rfmSetMode_s( REG_OPMODE_STDBY );
+  rfmSetMode_s( REG_OPMODE_SNDBY );
   // Если в FIFO осталось что-то - в мусор...
   while( dioRead(DIO_RX_FIFONE) ){
     rfmRegRead( REG_FIFO );
@@ -324,7 +324,7 @@ static inline void rfDataInit( void ){
 }
 
 static inline void rfmRegSetup( void ){
-  rfmRegWrite( REG_OPMODE,  REG_OPMODE_STDBY );
+  rfmRegWrite( REG_OPMODE,  REG_OPMODE_SNDBY );
   while( (rfmRegRead(REG_FLAG1) & REG_IF1_MODEREADY) != REG_IF1_MODEREADY)
   {}
 

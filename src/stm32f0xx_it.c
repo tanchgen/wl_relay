@@ -66,24 +66,25 @@ void SysTick_Handler(void) {
   // Таймер переключения светодиода Реле1
   if(ledBlinkR1 > 0){
     if(ledBlinkR1 == 1){
-      ledR1Off();
-//      ledR1Toggle();
-//      ledBlinkR1 = LED_BLINK_TIME;
+      ledR1Toggle();
+      ledBlinkR1 = LED_BLINK_TIME;
     }
     else {
       ledBlinkR1--;
     }
   }
+#if (LED_NUM == 3)
   // Таймер переключения светодиода Реле2
   if(ledBlinkR2 > 0){
     if(ledBlinkR2 == 1){
-//      ledR2Toggle();
+      ledR2Toggle();
       ledBlinkR2 = LED_BLINK_TIME;
     }
     else {
       ledBlinkR2--;
     }
   }
+#endif
 }
 
 void TIM2_IRQHandler( void ){
@@ -125,15 +126,15 @@ void RTC_IRQHandler(void){
     }
     if( ((rtc.sec % secTout) == 0) ){
       if( ((rtc.min % minTout) == 0) ){
-      // Alarm A interrupt
-      if(state == STAT_READY){
-        // Периодическое измерение - измеряем все
-        mesure();
-        if( ((rtc.min % minToutRx) == 0) || flags.driveErr ){
-          // Настало время передачи или ошибка устройства: Передаем состояние
-          csmaRun();
-        }
-      }
+				// Alarm A interrupt
+				if(state == STAT_READY){
+					// Периодическое измерение - измеряем все
+					mesure();
+					if( ((rtc.min % minToutRx) == 0) || flags.driveErr ){
+						// Настало время передачи или ошибка устройства: Передаем состояние
+						csmaRun();
+					}
+				}
       }
     }
     // Стираем флаг прерывания EXTI

@@ -146,7 +146,7 @@
 #define REG_OPMODE_LISTEN_ABR (uint8_t)0x20    // Прерывание режима прослушивания ( запись 1 - прервать )
 #define REG_OPMODE_MODE       (uint8_t)0x1C    // Маска флагов режима работы
 #define REG_OPMODE_SLEEP      (uint8_t)0x00    // Sleep-mode
-#define REG_OPMODE_STDBY      (uint8_t)0x04    // Standby - режим
+#define REG_OPMODE_SNDBY      (uint8_t)0x04    // Standby - режим
 #define REG_OPMODE_FS         (uint8_t)0x08    // FS-режим
 #define REG_OPMODE_TX         (uint8_t)0x0C    // TX-режим
 #define REG_OPMODE_RX         (uint8_t)0x10    // RX-режим

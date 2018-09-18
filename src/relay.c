@@ -16,7 +16,9 @@ union {
 
 volatile uint8_t ledBlinkGreen;    // Счетчик мигания светодиода On/RX
 volatile uint8_t ledBlinkR1;    // Счетчик мигания светодиода Реле1
-volatile uint8_t ledBlinkR2;    // Счетчик мигания светодиода Реле2
+#if (LED_NUM == 3)
+  volatile uint8_t ledBlinkR2;    // Счетчик мигания светодиода Реле2
+#endif
 
 void relayInit( void ){
   // ----------- Relay GPIO configration ----------------------
@@ -41,19 +43,27 @@ void relayStat( void ){
   tmpPin = GPIOB->IDR & GPIO_Pin_6;
   if( tmpPin ){
     relayState.relStat.st1 = SET;
-//    ledR1On();
+#if (LED_NUM == 3)
+    ledR1On();
+#endif
   }
   else {
     relayState.relStat.st1 = RESET;
-//    ledR1Off();
+#if (LED_NUM == 3)
+    ledR1Off();
+#endif
   }
   if((GPIOB->ODR & GPIO_Pin_6) == tmpPin){
-//    ledBlinkR1 = 0;
+#if (LED_NUM == 3)
+    ledBlinkR1 = 0;
+#endif
     relayState.relStat.err1 = RESET;
   }
   else {
+#if (LED_NUM == 3)
     // Ошибка - запускаем таймер мигания светодиодов
-//    ledBlinkR1 = LED_BLINK_TIME;
+    ledBlinkR1 = LED_BLINK_TIME;
+#endif
     relayState.relStat.err1 = SET;
     flags.driveErr = SET;
   }
@@ -62,34 +72,44 @@ void relayStat( void ){
   tmpPin = GPIOB->IDR & GPIO_Pin_7;
   if( tmpPin ){
     relayState.relStat.st2 = SET;
-//    ledR2On();
+#if (LED_NUM == 3)
+    ledR2On();
+#endif
   }
   else {
     relayState.relStat.st2 = RESET;
-//    ledR2Off();
+#if (LED_NUM == 3)
+    ledR2Off();
+#endif
   }
   if((GPIOB->ODR & GPIO_Pin_7) == tmpPin){
-//    ledBlinkR2 = 0;
+#if (LED_NUM == 3)
+    ledBlinkR2 = 0;
+#endif
     relayState.relStat.err2 = RESET;
   }
   else {
     // Ошибка - запускаем таймер мигания светодиодов
-//    ledBlinkR2 = LED_BLINK_TIME;
+#if (LED_NUM == 3)
+    ledBlinkR2 = LED_BLINK_TIME;
+#endif
     relayState.relStat.err2 = SET;
     flags.driveErr = SET;
   }
 
+#if (LED_NUM == 2)
   // Управление ОДНИМ светодиодом
   if( relayState.relStat.err1 || relayState.relStat.err2){
     // Ошибка одного из двух реле
     ledBlinkR1 = LED_BLINK_TIME;
   }
   else if( relayState.relStat.st1 || relayState.relStat.st2){
-//    ledR1On();
+    ledR1On();
   }
   else{
-//    ledR1Off();
+    ledR1Off();
   }
+#endif //(LED_NUM == 2)
 
   driveData.devState = relayState.u8;
 }
@@ -97,7 +117,7 @@ void relayStat( void ){
 void ledInit( void ){
   // ----------- Relay GPIO configration ----------------------
   RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
-#if 0
+#if (LED_NUM == 3)
   // Схема с 3-мя светодиодами
   /** RELAY GPIO Configuration
   PA10   ------> LED_GREEN
@@ -124,7 +144,16 @@ void ledInit( void ){
   GPIOA->PUPDR &= ~(GPIO_Pin_11 | GPIO_Pin_12);
 #endif
   ledGreenOff();
+#if (LED_NUM == 3)  
   (relayState.relStat.st1 == 0)? ledR1Off(): ledR1On();
   (relayState.relStat.st2 == 0)? ledR2Off(): ledR2On();
+#else 
+	if ( (relayState.relStat.st1 == 0) && (relayState.relStat.st2 == 0) ){
+		// Оба реле выключены - выключаем светодиод
+	  ledR2Off();
+	else {
+	 ledR2On();
+	}
+#endif // (LED_NUM == 3)
 }
 

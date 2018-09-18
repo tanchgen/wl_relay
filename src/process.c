@@ -53,14 +53,14 @@ void usTimHandler( void ){
     	dbgTime.rfmRxEnd = mTick;
     #endif // DEBUG_TIME
 
-    	rfmSetMode_s( REG_OPMODE_STDBY );
+    	rfmSetMode_s( REG_OPMODE_SNDBY );
       // Отправить сообщение
       correctAlrm();
       state = STAT_TX_START;
       sensDataSend();
       break;
     case STAT_TX_START:
-    	rfmSetMode_s( REG_OPMODE_STDBY );
+    	rfmSetMode_s( REG_OPMODE_SLEEP );
       txEnd();
       break;
 
@@ -120,9 +120,9 @@ void sensDataSend( void ){
   rfmTransmit( &pkt );
   // Таймаут до окончания передачи
   usTimSet( TX_DURAT*10 );
-  // Зажигаем красный светодиод
-  ledR1On();
-  ledBlinkR1 = LED_BLINK_TIME;
+//  // Зажигаем зеленый светодиод
+//  ledGreenOn();
+//  ledBlinkGreen = LED_BLINK_TIME;
 }
 
 void txEnd( void ){
