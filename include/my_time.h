@@ -61,7 +61,7 @@ extern volatile tUxTime uxTime;
 extern volatile uint8_t sendToutFlag;
 extern volatile uint8_t minTout;
 extern volatile uint8_t minToutRx;
-extern volatile uint8_t secTout;
+extern volatile uint8_t uxSecTout;
 
 
 extern volatile uint32_t mTick;

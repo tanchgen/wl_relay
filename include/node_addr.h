@@ -15,7 +15,7 @@
 
 #ifndef NODE_ADDR
 // Собственный адрес нода по умолчанию
-#define NODE_ADDR         0x19
+#define NODE_ADDR         0x1A
 
 #endif
 
